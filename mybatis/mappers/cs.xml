@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.cs">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+	<resultMap type="inqueryVO" id="inqResult">
+		<result property="inqNo" column="inqNo"/>
+		<result property="id" column="id"/>
+		<result property="inqTitle" column="inqTitle"/>
+		<result property="inqContent" column="inqContent"/>
+		<result property="adminId" column="adminId"/>
+		<result property="inqReply" column="inqReply"/>
+		<result property="hasRe" column="hasRe"/>
+		<result property="inqCate" column="inqCate"/>
+		<result property="inqDate" column="inqDate"/>
+	</resultMap>
+	
+	<resultMap type="faqVO" id="faqResult">
+		<result property="faqNo" column="faqNo"/>
+		<result property="adminId" column="adminId"/>
+		<result property="faqTitle" column="faqTitle"/>
+		<result property="faqContent" column="faqContent"/>
+		<result property="faqDate" column="faqDate"/>
+	</resultMap>
+	
+	<select id="selectFaqList" resultMap="faqResult">
+		select faqNo,adminId,faqTitle,faqContent,faqDate from faqtbl order by faqDate Desc
+	</select>
+	
+	<select id="selectUserInquery" resultMap="inqResult" parameterType="java.util.Map">
+		SELECT * FROM (select ROWNUM AS recNum,inqNo,id,inqTitle,hasRe,inqCate,inqDate from inquerytbl where id=#{id} order by inqDate Desc)
+		WHERE recNum BETWEEN (#{sectioin}-1)*100+(#{pageNum}-1)*10+1 AND (#{sectioin}-1)*100+#{pageNum}*10
+	</select>
+	
+	<select id="selectToInqueries" resultType="int" parameterType="String">
+		select count(*) from inquerytbl where id=#{id}
+	</select>
+	
+	<insert id="addInquery" parameterType="inqueryVO">
+		insert into inquerytbl(inqNo,id,inqTitle,inqContent,inqCate) values(inqNo_seq.nextval,#{id},#{inqTitle},#{inqContent},#{inqCate})
+	</insert>
+	
+	<select id="selectInqview" parameterType="inqueryVO" resultType="inqueryVO">
+		select * from inquerytbl where id=#{id} and inqNo=#{inqNo}
+	</select>
+</mapper>

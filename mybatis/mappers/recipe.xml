@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.recipe">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+	<resultMap type="recipeVO" id="recipeResult">
+		  <result property="recipeNo" column="recipeNo" />
+		  <result property="recipeTitle" column="recipeTitle" />
+		  <result property="recipeIntro" column="recipeIntro" />
+		  <result property="videoLink" column="videoLink" />
+		  <result property="cate" column="cate" />
+		  <result property="recipeTip" column="recipeTip" />
+		  <result property="writeDate" column="writeDate" />
+		  <result property="id" column="id" />
+		  <result property="cntLike" column="cntLike" />
+		  <!-- RecipeInfoVO 매핑 -->
+		  <association property="recipeInfoVO" javaType="recipeInfoVO" resultMap="infoResult" />
+		  <!-- MaterialVO  매핑 -->
+		  <association property="materialVO" javaType="materialVO" resultMap="mateResult" />
+		 <!-- MateTypeVO 매핑 -->
+		 <association property="materialTypeVO" javaType="materialTypeVO" resultMap="mateTypeResult" />
+		  <!-- RecipeStepVO  매핑 -->
+		  <association property="stepVO" javaType="stepVO" resultMap="stepResult" />
+		  <!-- ImageVO  매핑 -->
+		  <association property="imgVO" javaType="imgVO" resultMap="imageResult" />
+		  <!-- LikeVO  매핑 -->
+		  <association property="likeVO" javaType="likeVO" resultMap="likeResult" />
+		  
+	</resultMap>
+	
+	<resultMap type="recipeInfoVO" id="infoResult">
+		  <result property="recipeInfoNo" column="recipeInfoNo" />
+		  <result property="recipeNo" column="recipeNo" />
+		  <result property="infoServ" column="infoServ" />
+		  <result property="infoTime" column="infoTime" />
+		  <result property="infoDiff" column="infoDiff" />
+	</resultMap>
+	 <resultMap type="materialVO" id="mateResult">
+	   		<result property="mateNo" column="mateNo" />
+		    <result property="recipeNo" column="recipeNo" />
+		    <result property="matetypeNo" column="matetypeNo" />
+		    <result property="mateName" column="mateName" />
+		    <result property="mateAmount" column="mateAmount" />
+	 </resultMap>
+	 <resultMap type="materialTypeVO" id="mateTypeResult">
+		     <result property="matetypeNo" column="matetypeNo" />
+		     <result property="recipeNo" column="recipeNo" />
+		     <result property="matetypeName" column="matetypeName" />
+		 	 </resultMap>
+	 <resultMap type="stepVO" id="stepResult">
+		    <result property="recipeStepNo" column="recipeStepNo" />
+		    <result property="recipeNo" column="recipeNo" />
+		    <result property="stepSe" column="stepSe" />
+		    <result property="stepEx" column="stepEx" />
+	  </resultMap>
+	  <resultMap type="imgVO" id="imageResult">
+		    <result property="imgNum" column="imgNum" />
+		    <result property="imgCate" column="imgCate" />
+		    <result property="imgName" column="imgName" />
+		    <result property="id" column="id" />
+		    <result property="target" column="target" />
+		    <result property="stepNum" column="stepNum" />
+	  </resultMap>
+	  <resultMap type="likeVO" id="likeResult">
+		    <result property="likeNo" column="likeNo" />
+		    <result property="recipeNo" column="recipeNo" />
+		    <result property="id" column="id" />
+		    <result property="likeValue" column="likeValue" />
+	  </resultMap>
+	
+	
+	<!-- 레시피 검색 + 페이징 -->
+	<select id="searchRecipeTitle" resultMap="recipeResult" parameterType="java.util.Map">
+    <![CDATA[
+        SELECT * FROM (
+            SELECT rownum as rn, re.recipeNo, re.recipeTitle, re.cate, re.id, re.cntLike, im.imgName
+            FROM recipetbl re
+            JOIN imagetbl im ON re.recipeNo = im.target
+            WHERE im.imgCate = 1 AND re.recipeTitle LIKE '%' || #{recipeTitle} || '%'
+            ORDER BY recipeNo
+        )
+        WHERE rn BETWEEN ((#{section} - 1) * 120 + (#{pageNum} - 1) * 12 + 1) AND ((#{section} - 1) * 120 + #{pageNum} * 12)
+    ]]>
+</select>
+	
+	<select id="searchRecipeId" resultMap="recipeResult" parameterType="java.util.Map" >
+		<![CDATA[
+			SELECT * FROM (SELECT rownum as rn, re.recipeNo, re.recipeTitle, re.cate, re.id, re.cntLike, im.imgName FROM recipetbl re JOIN imagetbl im ON re.recipeNo = im.target
+			WHERE im.imgCate = 1 AND re.id = #{recipeId} ORDER BY recipeNo) WHERE rn BETWEEN ((#{section} - 1) * 120 + (#{pageNum} - 1) * 12 + 1) AND ((#{section} - 1) * 120 + #{pageNum} * 12)
+		]]>
+	</select>
+	
+	<select id="selectRecipeCate" resultMap="recipeResult" parameterType="java.util.Map" >
+		<![CDATA[
+			SELECT * FROM (SELECT rownum as rn, re.recipeNo, re.recipeTitle, re.cate, re.id, re.cntLike, im.imgName FROM recipetbl re JOIN imagetbl im ON re.recipeNo = im.target 
+			WHERE im.imgCate = 1 AND re.cate = #{cate} ORDER BY recipeNo) WHERE rn BETWEEN ((#{section} - 1) * 120 + (#{pageNum} - 1) * 12 + 1) AND ((#{section} - 1) * 120 + #{pageNum} * 12)
+			
+		]]>
+	</select>
+	
+	<!-- 레시피 개수 구하기 -->
+	<select id="selectToRecipeTitle" resultType="int" >
+		<![CDATA[
+		select count(*) from recipetbl where recipeTitle LIKE '%' || #{recipeTitle} || '%'
+		]]>
+	</select>
+	
+	<select id="selectToRecipeId" resultType="int" >
+		<![CDATA[
+		select count(*) from recipetbl where id=#{recipeId}
+		]]>
+	</select>
+	
+	<select id="selectToRecipeCate" resultType="int" >
+		<![CDATA[
+		select count(*) from recipetbl where cate=#{cate}
+		]]>
+	</select>
+	
+	<!-- 베스트 -->
+	
+	
+	<select id="selectBest" resultMap="recipeResult" parameterType="java.util.Map">
+		<![CDATA[
+		SELECT re.recipeNo, re.recipeTitle, re.id, re.cntLike, im.imgName FROM recipetbl re INNER JOIN imagetbl im ON re.recipeNo = im.target WHERE im.imgCate = 1 ORDER BY re.cntlike DESC
+		]]>
+	</select>
+	
+	<!-- 레시피 입력 -->
+	<insert id="insertRecipetbl" parameterType="com.recipeMall.recipe.vo.RecipeVO" useGeneratedKeys="true" keyProperty="recipeNo">
+		<![CDATA[
+	  INSERT INTO recipetbl (recipeNo, recipeTitle, recipeIntro, videoLink, cate, recipeTip, id, cntLike)
+	  VALUES ((SELECT COALESCE(MAX(recipeNo) + 1, 1) FROM recipetbl), #{recipeTitle}, #{recipeIntro}, #{videoLink}, #{cate}, #{recipeTip}, #{id}, #{cntLike})
+	  ]]>
+	</insert>
+	
+	<insert id="insertNewRecipeInfotbl" parameterType="java.util.Map">
+		<![CDATA[
+	    INSERT INTO recipeInfotbl (recipeInfoNo, recipeNo, infoServ, infoTime, infoDiff)
+	    VALUES ((SELECT COALESCE(MAX(recipeInfoNo) + 1, 1) FROM recipeInfotbl),
+	    #{recipeNo}, #{recipeVO.infoVO.infoServ}, #{recipeVO.infoVO.infoTime}, #{recipeVO.infoVO.infoDiff})
+	    ]]>
+	</insert>
+	
+	<insert id="insertMateTypetbl"  parameterType="java.util.Map">
+		<![CDATA[
+	   <foreach collection="recipeVO.matetypeVO.MaterialtypeList" item="materialtype" separator=";">
+	      INSERT INTO materialTypetbl (matetypeNo, recipeNo, mateTypeName)
+	      VALUES (#{materialtype.matetypeNo}, #{recipeNo}, #{materialtype.matetypeName})
+	   </foreach>
+	   ]]>
+	</insert>
+	
+	<insert id="insertMaterialtbl" parameterType="java.util.Map">
+		<![CDATA[
+	   <foreach collection="recipeVO.mateVO.MaterialList" item="material" separator=";">
+		     insert into materialtbl(mateNo,recipeNo,matetypeNo,mateName,mateAmount) values 
+		     ((SELECT COALESCE(MAX(mateNo)+ 1 , 1) FROM materialtbl), #{recipeNo}, #{material.matetypeNo}, #{material.mateName}, #{material.mateAmount})
+	   </foreach>
+	   ]]>
+	</insert>
+	
+	<insert id="insertSteptbl" parameterType="java.util.Map">
+		<![CDATA[
+		<foreach collection="recipeVO.stepVO.RecipeStepList" item="step" separator=";">
+			insert into recipeSteptbl(recipeStepNo,recipeNo,stepSe,stepEx) values ((SELECT COALESCE(MAX(recipeStepNo)+ 1, 1)  
+			FROM recipeSteptbl),#{recipeNo},#{step.stepSe},#{step.stepEx})
+		</foreach>
+		]]>
+	</insert>
+	
+	<insert id="insertImagetbl" parameterType="java.util.Map">
+		<![CDATA[
+		<foreach collection="recipeVO.imgVO.imgList" item="img" separator=";">
+			insert into imagetbl(imgNum,imgCate,imgName,id,target,stepNum)
+			 values ((SELECT COALESCE(MAX(imgNum)+ 1, 1)  FROM imagetbl),#{img.imgCate},#{img.imgName},#{img.id},#{img.target},#{img.stepNum})
+		</foreach>	
+		]]>
+	</insert>
+	
+	<!-- 상세페이지 보기  -->
+	<select id="selectRecipetbl" parameterType="int" resultMap="recipeResult">
+		  <![CDATA[
+		    SELECT recipeNo, recipeTitle, recipeIntro, videoLink, cate, recipeTip, id, writeDate, cntLike
+		    FROM recipetbl
+		    WHERE recipeNo = #{recipeNo}
+		  ]]>
+	</select>
+	
+	<select id="selectInfotbl" parameterType="int" resultMap="infoResult">
+		<![CDATA[
+	  SELECT recipeNo, recipeInfoNo, infoServ, infoTime, infoDiff from recipeInfotbl where recipeNo= #{recipeNo}
+	  ]]>
+	</select>
+	
+	<select id="selectMatetypetbl" parameterType="int" resultMap="mateTypeResult">
+		<![CDATA[
+	 		 SELECT recipeNo, matetypeNo, matetypeName from materialTypetbl where recipeNo=#{recipeNo}
+	 		 ]]>
+	</select>
+	
+	<select id="selectMatetbl" parameterType="int" resultMap="mateResult">
+		<![CDATA[
+		  SELECT recipeNo, matetypeNo, mateName, mateAmount from materialtbl where recipeNo=#{recipeNo}
+		  ]]>
+	</select>
+	
+	<select id="selectSteptbl" parameterType="int" resultMap="stepResult">
+		<![CDATA[
+		  SELECT recipeStepNo, stepSe, recipeNo, stepEx from recipeSteptbl where recipeNo=#{recipeNo}
+		  ]]>
+	</select>
+	
+	<select id="selectImgtbl" parameterType="int" resultMap="imageResult">
+		<![CDATA[
+		  SELECT imgNum, imgCate, imgName, stepNum from imagetbl where target=#{recipeNo}
+		  ]]>
+	</select>
+	
+	<select id="selectLiketbl" parameterType="java.util.Map" resultMap="likeResult">
+		<![CDATA[
+		 	SELECT likeValue from liketbl where id=#{id} and recipeNo=#{recipeNo}
+		  ]]>
+	</select>
+	
+	<!--matetypeno 생성 -->
+	
+	<select id="selectMaxTypeNo" resultType="int">
+		<![CDATA[
+			SELECT maxNo FROM (
+    			SELECT COALESCE(matetypeNo + 1, 1) AS maxNo FROM materialTypetbl ORDER BY matetypeNo DESC
+			) WHERE ROWNUM = 1
+		]]>
+	</select>
+	
+	<!-- 좋아요 기능  -->
+	<insert id="insertLike" parameterType="java.util.Map">
+	    <![CDATA[
+	        INSERT INTO liketbl (likeNo, recipeNo, id, likeValue)
+	        VALUES ((SELECT COALESCE(MAX(likeNo) + 1, 1) FROM liketbl), #{recipeNo}, #{id}, 1)
+	    ]]>
+	</insert>
+	
+	<update id="updateLike" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE liketbl SET likeValue = 1  WHERE recipeNo = #{recipeNo} AND id = #{id}
+			]]>
+	</update>
+	
+	<update id="plusCntLike" parameterType="java.util.Map">
+	    <![CDATA[
+	        UPDATE recipetbl SET cntLike = #{updatedCntLike} WHERE recipeNo = #{recipeNo}
+	    ]]>
+	</update>
+	
+	<update id="deleteLike" parameterType="java.util.Map">
+	<![CDATA[
+		UPDATE liketbl SET likeValue = 2  WHERE recipeNo = #{recipeNo} AND id = #{id}
+			]]>
+	</update>
+	
+	<update id="minusCntLike" parameterType="java.util.Map">
+    <![CDATA[
+         UPDATE recipetbl SET cntLike = #{updatedCntLike} WHERE recipeNo = #{recipeNo}
+    ]]>
+</update>
+	
+</mapper>

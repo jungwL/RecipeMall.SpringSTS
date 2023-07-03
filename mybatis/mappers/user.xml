@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.user">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+	
+	<select id="loginCheck" parameterType="userVO" resultType="String">
+		select decode(count(*), 1, 'true','false') as result from usertbl where id=#{id} and pw=#{pw}
+	</select>
+	
+	<select id="idExisted" parameterType="String" resultType="boolean">
+		select decode(count(*),1,'true','false') as result from usertbl where id=#{id}
+	</select>
+	
+	<select id="findUser" parameterType="String" resultType="userVO">
+		select * from usertbl where id=#{id}
+	</select>
+	
+	<insert id="addUserA" parameterType="userVO">
+		insert into usertbl(id,pw,name,nikName,phone,userAddr,userAddr2,rcmd) values(?,?,?,?,?,?,?,?)
+	</insert>
+	
+	<insert id="addUserB" parameterType="userVO">
+		insert into usertbl(id,pw,name,nikName,phone,userAddr,userAddr2) values(?,?,?,?,?,?,?)
+	</insert>
+	
+	<select id="userInfo" parameterType="String" resultType="userVO">
+		select * from usertbl where id=#{id}
+	</select>
+	
+	<update id="updateUser" parameterType="userVO">
+		update usertbl set pw=#{pw}, nikName=#{nikName}, phone=#{phone} where id=#{id}
+	</update>
+	
+	<delete id="deleteUser" parameterType="String">
+		delete from usertbl where id=#{id}
+	</delete>
+</mapper>

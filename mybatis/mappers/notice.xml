@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.admin">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<resultMap type="noticeVO" id="noticeResult">
+		<result property="noticeNo" column="noticeNo"/>
+		<result property="adminId" column="adminId"/>
+		<result property="noticeTitle" column="noticeTitle"/>
+		<result property="noticeContent" column="noticeContent"/>
+		<result property="noticeDate" column="noticeDate"/>
+	</resultMap>
+	
+	<select id="seleteAllNotices" parameterType="java.util.Map" resultMap="noticeResult">
+		SELECT * FROM (SELECT ROWNUM AS recNum, noticeNo, adminId, noticeTitle, noticeDate
+		FROM noticetbl order by noticeDate desc)
+		WHERE recNum BETWEEN (#{sectioin}-1)*100+(#{pageNum}-1)*10+1 AND (#{sectioin}-1)*100+#{pageNum}*10
+	</select>
+	
+	<select id="selectToNotices" resultType="int">
+		select count(*) from noticetbl
+	</select>
+	
+	<select id="selectNoticeView" parameterType="int" resultType="noticeVO">
+		select * from noticetbl where noticeNo=?
+	</select>
+</mapper>

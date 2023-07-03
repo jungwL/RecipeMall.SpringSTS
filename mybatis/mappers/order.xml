@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.order">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+	<resultMap type="userVO" id="userResult">
+		<result property="name" column="name"/>
+		<result property="phone" column="phone"/>
+		<result property="userAddr" column="userAddr"/>
+		<result property="userAddr2" column="userAddr2"/>
+	</resultMap>
+	<resultMap type="cartVO" id="cartResult">
+		<result property="prodCode" column="prodCode"/>
+		<result property="cartCount" column="cartCount"/>
+		<result property="prodPrice" column="prodPrice"/>
+		<result property="prodImage" column="prodImage"/>
+		<result property="prodName" column="prodName"/>
+	</resultMap>
+	<resultMap type="orderVO" id="orderResult">
+		<result property="orderCode" column="orderCode"/>
+		<result property="deliveryFee" column="deliveryFee"/>
+		<result property="allOrderPrice" column="allOrderPrice"/>
+		<result property="shipAddr" column="shipAddr"/>
+		<result property="shipAddr2" column="shipAddr2"/>
+		<result property="requestMsg" column="requestMsg"/>
+		<result property="name" column="name"/>
+		<result property="phone" column="phone"/>
+	</resultMap>
+	
+	<select id="selectUserInfo" resultMap="userResult" parameterType="String">
+		<![CDATA[
+			SELECT name, phone, userAddr, userAddr2 from usertbl where id=#{id}
+		]]>
+	</select> 
+	
+	<select id="selectCartInfos" resultMap="cartResult" parameterType="java.util.Map">
+		SELECT * FROM carttbl WHERE prodName IN
+    	<foreach item="item" collection="prodNames" open="(" separator="," close=")">
+     		 #{item} 
+    	</foreach>
+    	AND id = #{id}
+	</select>
+	
+	<select id="selectOrder" resultMap="orderResult" parameterType="String">
+		<![CDATA[
+		SELECT * FROM (SELECT o.orderCode, o.deliveryFee, o.allOrderPrice, o.shipAddr, o.shipAddr2, o.requestMsg ,u.name, u.phone FROM ordertbl o INNER JOIN usertbl u ON o.id = u.id WHERE u.id=#{id} ORDER BY o.orderCode DESC) WHERE ROWNUM = 1
+		]]>
+	</select>
+	
+	 <select id="selectDetail" resultType="OrderDVO" parameterType="int">
+	 	select p.prodName, o.orderAmount, p.prodCode from orderDtbl o INNER JOIN producttbl p ON o.prodCode = p.prodCode WHERE orderCode = #{orderCode}
+	 </select>
+	 
+	 <delete id="deleteCart" parameterType="String">
+   		<![CDATA[
+   			DELETE FROM carttbl WHERE prodCode IN (SELECT odt.prodCode FROM orderdtbl odt INNER JOIN ordertbl ot ON odt.orderCode = ot.orderCode WHERE ot.orderCode = (SELECT MAX(orderCode) FROM ordertbl WHERE id = #{id}))
+   		]]>
+   </delete>
+   
+   <update id="updateProd" parameterType="java.util.Map">
+		    UPDATE producttbl SET prodCount = prodCount + #{cartCount} WHERE prodCode = #{prodCode}
+   </update>
+   
+   <insert id="insertOrder" parameterType="java.util.Map">
+			INSERT INTO ordertbl(orderCode, id, orderStatus, paymentStatus, allOrderPrice, deliveryFee, shipAddr, shipAddr2, requestMSG) values(ORDERSEQ.nextval, #{id}, 1, 1, #{allOrderPrice}, 2500, #{userAddr}, #{userAddr2}, #{deliveryMSG})
+	</insert>
+	
+	<select id="selectOrderD" resultType="int" parameterType="String">
+		<![CDATA[
+			SELECT MAX(orderCode) AS maxOrderCode FROM ordertbl WHERE id = #{id}
+		]]>
+	</select>
+	
+	<insert id="insertOrderD" parameterType="java.util.Map">
+			INSERT INTO orderDtbl (orderCode, prodCode, orderAmount) VALUES (#{maxArr}, #{prodCode}, #{cartCount})	
+	</insert>
+</mapper>

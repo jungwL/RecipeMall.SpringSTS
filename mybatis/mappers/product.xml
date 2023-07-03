@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.product">
+	<resultMap type="ProductVO" id="productVO">
+		<result property="prodCode" column="prodCode"/>
+		<result property="prodName" column="prodName"/>
+		<result property="prodKind" column="prodKind"/>
+		<result property="prodPrice" column="prodPrice"/>
+		<result property="prodImage" column="prodImage"/>
+		<result property="prodDate" column="prodDate"/>
+		<result property="prodContent1" column="prodContent1"/>
+		<result property="prodContent2" column="prodContent2"/>
+		<result property="prodContent3" column="prodContent3"/>
+		<result property="prodContentImage1" column="prodContentImage1"/>
+		<result property="prodContentImage2" column="prodContentImage2"/>
+		<result property="prodCount" column="prodCount"/>
+		<result property="prodSeason" column="prodSeason"/>
+		<result property="avgStar" column="avgStar"/>
+		<result property="reviewCnt" column="reviewCnt"/>
+		<result property="prodRest" column="prodRest"/>
+	</resultMap>
+	
+	<resultMap type="productVO" id="prodAllResult">
+      <result property="prodCode" column="prodCode"/>
+      <result property="prodName" column="prodName"/>
+      <result property="prodKind" column="prodKind"/>
+      <result property="prodPrice" column="prodPrice"/>
+      <result property="prodImage" column="prodImage"/>
+      <result property="avgStar" column="avgStar"/>
+      <result property="reviewCnt" column="reviewCnt"/>
+   </resultMap>
+   
+   <resultMap type="recipeVO" id="recipeResult">
+      <result property="recipeNo" column="recipeNo"/>
+      <result property="recipeTitle" column="recipeTitle"/>
+      <association property="imgVO" javaType="imgVO" resultMap="imageResult" />
+      <!-- <result property="imgName" column="imgName"/> -->
+   </resultMap>
+   
+   <resultMap type="imgVO" id="imageResult">
+	    <result property="imgName" column="imgName" />
+   </resultMap>
+   
+	<resultMap type="ReviewVO" id="reviewVO">
+		<result property="prodCode" column="prodCode"/>
+		<result property="reviewCode" column="reviewCode"/>
+		<result property="prodImage" column="prodImage"/>
+		<result property="reviewContent" column="reviewContent"/>
+		<result property="reviewContent" column="reviewContent"/>
+		<result property="reviewStar" column="reviewStar"/>
+		<result property="reviewDate" column="reviewDate"/>
+		<result property="prodName" column="prodName"/>
+		<result property="orderCode" column="orderCode"/>
+	</resultMap>
+	
+	<resultMap type="ProductFaqVO" id="productFaqVO">
+		<result property="prodFaqNo" column="prodFaqNo"/>
+		<result property="prodFaqTitle" column="prodFaqTitle"/>
+		<result property="content" column="content"/>
+		<result property="adminId" column="adminId"/>
+		<result property="prodContent" column="prodContent"/>
+		<result property="hasComent" column="hasComent"/>
+		<result property="id" column="id"/>
+		<result property="prodCode" column="prodCode"/>
+		<result property="prodName" column="prodName"/>
+		<result property="prodFaqDate" column="prodFaqDate"/>
+	</resultMap>
+	
+	<select id="selectSeason" resultType="productVO">
+        SELECT prodCode, prodName, prodPrice, prodImage, prodCount, prodSeason, avgStar, reviewCnt
+        FROM producttbl
+    </select>
+    
+    <select id="slelectProdCount" resultType="productVO">
+        SELECT prodCode, prodName, prodPrice, prodImage, avgStar, reviewCnt, prodCount
+        FROM producttbl
+        ORDER BY prodCount DESC
+    </select>
+    
+    <select id="selectCode" resultMap="productVO" parameterType="java.util.Map">
+       SELECT  prodCode, prodName, prodKind, prodPrice, prodImage,prodContent1,prodContent2,prodContent3,prodContentImage1,prodContentImage2,
+					 prodCount,prodSeason, avgStar, reviewCnt,prodRest FROM producttbl WHERE prodCode=#{tempCode}
+    </select>
+    
+    <select id="selectReview" resultType="reviewVO" parameterType="int">
+       SELECT  prodCode, reviewCode, reviewContent, id,reviewDate
+					 FROM reviewtbl WHERE prodCode=#{tempCode}
+    </select>
+  
+    <select id="selectSimilarProduct" resultMap="productVO" parameterType="int">
+       <![CDATA[
+		 SELECT * FROM producttbl WHERE prodKind=(select prodKind from producttbl where prodCode=#{tempCode}) and  ROWNUM BETWEEN 1 AND 5
+		]]>
+    </select>
+    
+    <insert id="insertCart" parameterType="cartVO">
+    	<![CDATA[
+			insert into carttbl(prodName,prodImage,cartCount,prodPrice,id,prodCode) values(#{prodName},#{prodImage},#{cartCount},#{prodPrice},#{id},#{prodCode})
+		]]>
+    </insert>
+    
+     <select id="selectFaq" resultType="productFaqVO" parameterType="int">
+     	<![CDATA[
+      		SELECT * FROM productFaqtbl where prodCode=#{tempCode}
+      	]]>
+    </select>
+    
+     <insert id="insertFaq"  parameterType="productFaqVO">
+    	<![CDATA[
+		insert into productFaqtbl(content,id,prodCode,prodFaqTitle,prodName,prodFaqNo) values(#{content},#{id},#{prodCode},#{prodFaqTitle},#{prodName},#{prodFaqNo})
+		]]>
+    </insert>
+    
+    <select id="selectProdName" resultMap="prodAllResult" parameterType="java.util.Map">
+            SELECT rownum, prodCode, prodName, prodKind, prodPrice, prodImage, avgStar, reviewCnt FROM (SELECT prodCode, prodName, prodKind, prodPrice, prodImage, avgStar, reviewCnt, ROW_NUMBER() OVER (ORDER BY prodCode) AS rn FROM producttbl WHERE prodName LIKE '%'||#{prodName}||'%') WHERE rn BETWEEN (#{section}-1)*90+(#{pageNum}-1)*9+1 AND (#{section}-1)*90+#{pageNum}*9
+    </select>
+    
+    <select id="selectProdKind" resultMap="prodAllResult" parameterType="java.util.Map">
+        <![CDATA[
+            SELECT rownum, prodCode, prodName, prodKind, prodPrice, prodImage, avgStar, reviewCnt FROM (SELECT prodCode, prodName, prodKind, prodPrice, prodImage, avgStar, reviewCnt, ROW_NUMBER() OVER (ORDER BY prodCode) AS rn FROM producttbl WHERE prodKind=#{prodKind}) WHERE rn BETWEEN (#{section}-1)*90+(#{pageNum}-1)*9+1 AND (#{section}-1)*90+#{pageNum}*9
+         ]]>
+    </select>
+    
+    <select id="selectMatarialName" resultType="int" parameterType="String">
+        <![CDATA[
+            select count(*) from producttbl where prodName like '%'||#{prodName}||'%'
+         ]]>
+    </select>
+    
+    <select id="selectMatarialKind" resultType="int" parameterType="int">
+        <![CDATA[
+            select count(*) from producttbl where prodKind=#{prodKind_}
+         ]]>
+    </select>
+    
+    <select id="slelectReview" resultType="productVO">
+        <![CDATA[
+            SELECT prodCode, prodName, prodPrice, prodImage, avgStar, reviewCnt FROM producttbl ORDER BY avgStar DESC
+         ]]>
+    </select>
+    
+     <select id="selectRecipe" resultMap="recipeResult">
+        <![CDATA[
+            select r.recipeNo, r.recipeTitle,im.imgName from recipetbl r,imagetbl im where r.recipeNo=im.target and im.imgCate=1
+         ]]>
+    </select>
+    
+    
+</mapper>

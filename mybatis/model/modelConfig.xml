@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">   <!-- 마이바티스 설정 스키마 -->
+
+<configuration>
+   <typeAliases>
+      <!-- => UserVO userVO=new UserVO(); / userVO 빈 생성 -->
+      <typeAlias type="com.spring.recipeMall.user.vo.UserVO" alias="userVO"/>
+      <typeAlias type="com.spring.recipeMall.admin.vo.AdminVO" alias="adminVO"/>
+      <typeAlias type="com.spring.recipeMall.board.vo.FreeBoardVO" alias="freeBoardVO"/>
+      <typeAlias type="com.spring.recipeMall.mypage.vo.ShippingAddrVO" alias="shippingAddrVO"/>
+      <typeAlias type="com.spring.recipeMall.notice.vo.NoticeVO" alias="noticeVO"/>
+      <typeAlias type="com.spring.recipeMall.review.vo.ReviewVO" alias="reviewVO"/>
+      <typeAlias type="com.spring.recipeMall.cs.vo.FaqVO" alias="faqVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.MaterialVO" alias="materialVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.MaterialTypeVO" alias="materialTypeVO"/>
+      <typeAlias type="com.spring.recipeMall.cs.vo.InqueryVO" alias="inqueryVO"/>
+      <typeAlias type="com.spring.recipeMall.order.vo.OrderDVO" alias="orderDVO"/>
+      <typeAlias type="com.spring.recipeMall.order.vo.OrderVO" alias="orderVO"/>
+      <typeAlias type="com.spring.recipeMall.productFaq.vo.ProductFaqVO" alias="productFaqVO"/>
+      <typeAlias type="com.spring.recipeMall.board.vo.FreeBoardReplyVO" alias="freeBoardReplyVO"/>
+      <typeAlias type="com.spring.recipeMall.shopping.vo.ProductVO" alias="productVO"/>
+      <typeAlias type="com.spring.recipeMall.mypage.vo.CartVO" alias="cartVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.RecipeVO" alias="recipeVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.RecipeStepVO" alias="stepVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.RecipeInfoVO" alias="recipeInfoVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.LikeVO" alias="likeVO"/>
+      <typeAlias type="com.spring.recipeMall.recipe.vo.ImageVO" alias="imgVO"/>
+   </typeAliases>
+</configuration>

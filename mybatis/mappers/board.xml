@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.board">
+   <!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+   <!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+   <!-- 게시판  -->
+      <resultMap type="freeBoardVO" id="freeBoardResult">
+         <result property="boardNo" column="boardNo"/>
+         <result property="boardName" column="boardName"/>
+         <result property="boardContent" column="boardContent"/>
+         <result property="writeDate" column="writeDate"/>
+         <result property="id" column="id"/>
+         <result property="cntView" column="cntView"/>
+         <!-- <result property="rownum" column="rownum"/> -->
+         <result property="imgName" column="imgName"/>
+      </resultMap>
+      <!-- 게시판 댓글  -->
+      <resultMap type="freeBoardReplyVO" id="freeBoardReplyResult">
+         <result property="replyNo" column="replyNo"/>
+         <result property="boardNo" column="boardNo"/>
+         <result property="id" column="id"/>
+         <result property="content" column="content"/>
+         <result property="regDate" column="regDate"/>
+      </resultMap>
+      
+      <!-- 페이징 처리 리스트 -->
+       <select id="selectAllList" resultMap="freeBoardResult" parameterType="java.util.Map">
+         <![CDATA[
+            select * from (select ROWNUM AS recNum, boardNo, boardName, boardContent,writeDate,id,cntView from (SELECT boardNo, boardName, boardContent,writeDate,id,cntView FROM freeboardtbl order by writeDate desc)) where recNum BETWEEN (#{section}-1)*50+(#{pageNum}-1)*5+1 AND (#{section}-1)*50+#{pageNum}*5
+            ]]>
+      </select>  
+      <!-- 기존 리스트 -->
+      <select id="selectList" resultMap="freeBoardResult">
+            <![CDATA[
+             select rownum as rn, boardNo, boardName, boardContent, writeDate, id, cntView from freeboardtbl order by writeDate desc"
+             ]]>
+      </select>
+      <!-- 전체 글 수   -->
+      <select id="selectToArticles" resultType="int">
+            <![CDATA[
+            select count(*) from freeboardtbl
+            ]]>
+      </select>
+      <!-- 상세보기 -->
+      <select id="viewBoard" resultMap="freeBoardResult" parameterType="int">
+            <![CDATA[
+            select * from freeboardtbl where boardNo = #{boardNo}
+            ]]>
+      </select>
+      <!-- 댓글 -->
+      <select id="selectreplyBoard" resultMap="freeBoardReplyResult" parameterType="int">
+            <![CDATA[
+              select * from freeboardreplytbl where boardNo = #{boardNo} order by replyNo desc
+            ]]>
+      </select>
+      
+      <insert id="insertBoard" parameterType="freeboardVO" >
+         <![CDATA[
+         insert into freeboardtbl(boardNo,boardName, boardContent, id,imgName) values(boardno_seq.nextval,#{boardName},#{boardContent},#{id},#{imgName})
+         ]]>
+      </insert>
+      
+      <select id="getBoardNo" resultType="int">
+            <![CDATA[
+            select max(boardno) from freeboardtbl
+            ]]>
+      </select>
+      
+      <insert id="replyBoard" parameterType="freeBoardReplyVO">
+            <![CDATA[
+            insert into freeboardreplytbl (replyNO,boardNo,id,content,regdate) values(replyno_seq.nextval,#{boardNo},#{id},#{content},sysdate)
+            ]]>
+      </insert>
+      
+      <select id="reWriteboard" parameterType="int" resultMap="freeBoardResult">
+         select * from freeboardtbl where boardNo = #{boardNo}
+      </select>
+      
+      <update id="modView1" parameterType="freeBoardVO" >
+         update freeboardtbl set boardName=#{boardName},boardContent=#{boardContent} 
+          where boardNo=#{boardNo}
+      </update>
+      <update id="modView2" parameterType="freeBoardVO" >
+         update freeboardtbl set boardName=#{boardName},boardContent=#{boardContent} 
+         ,imgName=#{imgName} 
+          where boardNo=#{boardNo}
+      </update>
+      <delete id="removeBoard" parameterType="freeBoardVO">
+         DELETE FROM freeboardtbl WHERE boardNo =#{boardNo}
+      </delete>
+   
+</mapper>

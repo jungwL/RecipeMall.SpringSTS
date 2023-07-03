@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.main">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<resultMap type="productVO" id="prodBestResult">
+		<result property="prodCode" column="prodCode" />
+		<result property="prodName" column="prodName" />
+		<result property="prodPrice" column="prodPrice" />
+		<result property="prodImage" column="prodImage" />
+		<result property="avgStar" column="avgStar" />
+		<result property="reviewCnt" column="reviewCnt" />
+	</resultMap>
+
+	<resultMap type="freeBoardVO" id="recentBoardRs">
+		<result property="boardNo" column="boardNo"/>
+		<result property="boardName" column="boardName"/>
+		<result property="writeDate" column="writeDate"/>
+	</resultMap>
+	
+	<resultMap type="recipeVO" id="recentRecipeRs">
+		<result property="recipeNo" column="recipeNo"/>
+		<result property="recipeTitle" column="recipeTitle"/>
+		<result property="imgVO.imgName" column="imgName"/>
+	</resultMap>
+
+	<select id="selectBoard" resultMap="recentBoardRs">
+		SELECT boardNo, boardName, writeDate FROM freeboardtbl
+	</select>
+
+	<select id="selectReview" resultMap="prodBestResult">
+		SELECT prodCode, prodName, prodPrice, prodImage, avgStar, reviewCnt FROM producttbl ORDER BY avgStar DESC
+	</select>
+
+	<select id="selectRecipe" resultMap="recentRecipeRs">
+		select r.recipeNo, r.recipeTitle, im.imgName from recipetbl r,imagetbl im where r.recipeNo=im.target and im.imgCate=1
+	</select>
+</mapper>

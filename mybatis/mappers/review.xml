@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.review">
+	<!-- type에는 typeAlias의 alias값을 넣어야 함 -->
+	<!-- 쿼리 수행 후 결과를 type형식에 맞게 Result에 넣음 -->
+	<resultMap type="reviewVO" id="reviewVO">
+		<result property="prodCode" column="prodCode" />
+		<result property="reviewCode" column="reviewCode" />
+		<result property="prodImage" column="prodImage" />
+		<result property="reviewContent" column="reviewContent" />
+		<result property="id" column="id" />
+		<result property="reviewStar" column="reviewStar" />
+		<result property="reviewDate" column="reviewDate" />
+		<result property="prodName" column="prodName" />
+		<result property="orderCode" column="orderCode" />
+	</resultMap>
+
+	<select id="selectReviewList" parameterType="String" resultType="reviewVO">
+	<![CDATA[
+		SELECT prodCode, reviewCode, prodImage, reviewContent, id, reviewStar, reviewDate, prodName, orderCode FROM reviewtbl WHERE id = #{id}
+	]]>
+	</select>
+
+	<update id="updateReview" parameterType="reviewVO">
+	<![CDATA[
+		update reviewtbl set reviewContent=#{reviewContent}, reviewStar=#{reviewStar} where id=#{id} and orderCode=#{orderCode} and prodCode=#{prodCode}
+	]]>
+	</update>
+	
+	<select id="selectProd" parameterType="java.util.List" resultType="ProductVO">
+		select prodImage from producttbl where prodcode=#{prodCode}
+	</select>
+
+	<insert id="insertReviewProdInfo" parameterType="java.util.Map">
+		<foreach item="item" collection="list" open="INSERT ALL" separator="" close="SELECT * FROM DUAL">
+			INTO reviewtbl (prodCode, reviewCode, prodImage, id, reviewDate, prodName, orderCode) VALUES(#{item.prodCode},REVIEW_SEQ.NEXTVAL,#{item.prodImage},#{item.id},sysdate,#{item.prodName},#{item.orderCode})
+		</foreach>
+	</insert>
+</mapper>

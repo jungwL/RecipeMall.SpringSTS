@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.mypage">
+
+   <resultMap type="shippingAddrVO" id="shippingAddrVO">
+      <result property="shippingName" column="shippingName"/>
+      <result property="ShippingTitle" column="ShippingTitle"/>
+      <result property="id" column="id"/>
+      <result property="shippingZonecode" column="shippingZonecode"/>
+      <result property="shippingAddressSub" column="shippingAddressSub"/>
+      <result property="shippingPhone" column="shippingPhone"/>
+      <result property="shippingCellphone" column="shippingCellphone"/>
+   </resultMap>
+   
+   <resultMap type="cartVO" id="cartVO">
+      <result property="prodCode" column="prodCode"/>
+      <result property="id" column="id"/>
+      <result property="cartCount" column="cartCount"/>
+      <result property="cartDate" column="cartDate"/>
+      <result property="prodPrice" column="prodPrice"/>
+      <result property="prodImage" column="prodImage"/>
+      <result property="prodName" column="prodName"/>
+   </resultMap>
+   
+   <resultMap type="orderVO" id="orderVO">
+      <result property="orderCode" column="orderCode"/>
+      <result property="id" column="id"/>
+      <result property="orderDate" column="orderDate"/>
+      <result property="orderStatus" column="orderStatus"/>
+      <result property="paymentStatus" column="paymentStatus"/>
+      <result property="allProdPrice" column="allProdPrice"/>
+      <result property="deliveryFee" column="deliveryFee"/>
+      <result property="allOrderPrice" column="allOrderPrice"/>
+      <result property="shipAddr" column="shipAddr"/>
+      <result property="shipAddr2" column="shipAddr2"/>
+      <result property="requestMsg" column="requestMsg"/>
+      <result property="name" column="name"/>
+      <result property="phone" column="phone"/>
+   </resultMap>
+   
+   <resultMap type="orderDVO" id="orderDVO">
+      <result property="orderCode" column="orderCode"/>
+      <result property="prodCode" column="prodCode"/>
+      <result property="orderAmount" column="orderAmount"/>
+      <result property="prodName" column="prodName"/>
+      <result property="prodPrice" column="prodPrice"/>
+   </resultMap>
+   
+   <resultMap type="productVO" id="productVO">
+      <result property="prodCode" column="prodCode"/>
+      <result property="prodName" column="prodName"/>
+      <result property="prodKind" column="prodKind"/>
+      <result property="prodPrice" column="prodPrice"/>
+      <result property="prodImage" column="prodImage"/>
+      <result property="prodDate" column="prodDate"/>
+      <result property="prodContent1" column="prodContent1"/>
+      <result property="prodContent2" column="prodContent2"/>
+      <result property="prodContent3" column="prodContent3"/>
+      <result property="prodContentImage1" column="prodContentImage1"/>
+      <result property="prodContentImage2" column="prodContentImage2"/>
+      <result property="prodCount" column="prodCount"/>
+      <result property="prodSeason" column="prodSeason"/>
+      <result property="avgStar" column="avgStar"/>
+      <result property="reviewCnt" column="reviewCnt"/>
+      <result property="prodRest" column="prodRest"/>
+   </resultMap>
+   
+   <resultMap type="freeBoardReplyVO" id="freeBoardReplyVO">
+      <result property="replyNo" column="replyNo"/>
+      <result property="boardNo" column="boardNo"/>
+      <result property="id" column="id"/>
+      <result property="content" column="content"/>
+      <result property="regDate" column="regDate"/>   
+   </resultMap>
+   
+   <resultMap type="freeBoardVO" id="freeBoardVO">
+      <result property="boardNo" column="boardNo"/>
+      <result property="boardName" column="boardName"/>
+      <result property="boardContent" column="boardContent"/>
+      <result property="writeDate" column="writeDate"/>
+      <result property="id" column="id"/>
+      <result property="cntView" column="cntView"/>
+      <result property="rownum" column="rownum"/>
+      <result property="imgName" column="imgName"/>
+   </resultMap>
+   
+   <resultMap type="recipeVO" id="recipeVO">
+      <result property="recipeNo" column="recipeNo"/>
+      <result property="recipeTitle" column="recipeTitle"/>
+      <result property="recipeIntro" column="recipeIntro"/>
+      <result property="videoLink" column="videoLink"/>
+      <result property="cate" column="cate"/>
+      <result property="recipeTip" column="recipeTip"/>
+      <result property="writeDate" column="writeDate"/>
+      <result property="id" column="id"/>
+   </resultMap>
+   
+   <select id="listShippingAddr"  resultMap="shippingAddrVO" parameterType="String">
+      <![CDATA[
+         select shippingName,shippingTitle,shippingZonecode,shippingAddress,shippingAddressSub,shippingPhone,shippingCellphone from shippingaddrtbl where id=#{id}
+      ]]>
+   </select>
+   
+   <insert id="addShipping" parameterType="shippingAddrVO">
+      <![CDATA[
+         insert into shippingaddrtbl(shippingName,shippingTitle,id,shippingZonecode,shippingAddress, 
+          shippingAddressSub,shippingPhone,shippingCellphone) values(#{shippingName},#{shippingTitle},#{id},#{shippingZonecode},#{5, shippingAddress},#{shippingAddressSub},#{shippingPhone},#{shippingCellphone})
+      ]]>
+   </insert>
+   
+   <delete id="deleteShipping" parameterType="java.util.Map">
+      <![CDATA[
+         delete from shippingaddrtbl where id=#{id} and shippingName=#{shippingName}
+      ]]>
+   </delete>
+   
+   <select id="cartSelect"  resultMap="cartVO" parameterType="String">
+      <![CDATA[
+         select prodCode, cartCount, prodPrice, prodImage, prodName from carttbl where id=#{id}
+      ]]>
+   </select>
+   
+   <delete id="deleteCart" parameterType="java.util.Map">
+      <![CDATA[
+            delete from carttbl where prodCode=#{prodCode} and id=#{id}
+         ]]>
+   </delete>
+   
+   <update id="upadteCart" parameterType="java.util.Map">
+      <![CDATA[
+         update carttbl set cartCount=#{cartCount} where id=#{id} and prodName=#{prodName}
+      ]]>
+   </update>
+   
+   <select id="selectOrder1"  resultMap="orderVO" parameterType="String">
+      <![CDATA[
+         select orderCode,orderDate from ordertbl where id=#{id}
+      ]]>
+   </select>
+   
+   <select id="selectOrder2"  resultMap="orderDVO" parameterType="java.util.List">
+      SELECT o.prodCode, o.orderAmount, ot.orderDate, p.prodPrice, p.prodName FROM orderdtbl o INNER JOIN producttbl p ON o.prodCode 
+      = p.prodCode INNER JOIN ordertbl ot ON o.orderCode = ot.orderCode WHERE ot.orderCode IN
+      <foreach item="item" collection="list"  open="(" separator="," close=")">
+         #{item.orderCode}
+      </foreach>
+   </select>
+   
+   <select id="selectFreePosts" resultMap="freeBoardVO" parameterType="String">
+      <![CDATA[
+         select boardNo, boardName, writeDate from freeboardtbl where id=#{id}
+      ]]>
+   </select>
+   
+   <select id="selectRecipePosts" resultMap="recipeVO" parameterType="String">
+      <![CDATA[
+         select recipeNo, recipeTitle, writeDate from recipetbl where id=#{id}
+      ]]>
+   </select>
+   
+   <select id="selectFreeReply" resultMap="freeBoardReplyVO" parameterType="java.util.Map">
+      <![CDATA[
+         SELECT * FROM (SELECT ROWNUM AS recNum, boardNo, content, regDate 
+         FROM freeboardreplytbl where id={id} order by regDate desc) 
+         WHERE recNum BETWEEN (#{section}-1)*100+(#{pageNum}-1)*10+1 AND (#{section}-1)*100+#{pageNum}*10
+      ]]>
+   </select>
+   
+   <select id="selectUserTotReplies"  resultType="int" parameterType="String">
+      <![CDATA[
+         select count(*) from freeboardreplytbl where id=#{id}
+      ]]>
+   </select>
+</mapper>
