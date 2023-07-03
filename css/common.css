@@ -33,37 +33,37 @@ ul {
 /* 기본스타일 */
 @font-face {
     font-family: "NotoSansL";
-    src: url("/recipeMall/resources/font/NotoSansKR-Light.otf") format("truetype");
+    src: url("../font/NotoSansKR-Light.otf") format("truetype");
 }
 
 @font-face {
     font-family: "NotoSansR";
-    src: url("/recipeMall/resources/font/NotoSansKR-Regular.otf") format("truetype");
+    src: url("../font/NotoSansKR-Regular.otf") format("truetype");
 }
 
 @font-face {
     font-family: "NotoSansM";
-    src: url("/recipeMall/resources/font/NotoSansKR-Medium.otf") format("truetype");
+    src: url("../font/NotoSansKR-Medium.otf") format("truetype");
 }
 
 @font-face {
     font-family: "NotoSansBl";
-    src: url("/recipeMall/resources/font/NotoSansKR-Black.otf") format("truetype");
+    src: url("../font/NotoSansKR-Black.otf") format("truetype");
 }
 
 @font-face {
     font-family: "NotoSansBo";
-    src: url("/recipeMall/resources/font/NotoSansKR-Bold.otf") format("truetype");
+    src: url("../font/NotoSansKR-Bold.otf") format("truetype");
 }
 
 @font-face {
     font-family: "NotoSansTh";
-    src: url("/recipeMall/resources/font/NotoSansKR-Thin.otf") format("truetype");
+    src: url("../font/NotoSansKR-Thin.otf") format("truetype");
 }
 
 @font-face {
     font-family: "malssami";
-    src: url("/recipeMall/resources/font/malssami815.ttf") format("truetype");
+    src: url("../font/malssami815.ttf") format("truetype");
 }
 
 a:link {
@@ -221,7 +221,7 @@ button {
 }
 
 li.main {
-    background: url("/recipeMall/resources/images/recipemall-logo-commu.svg") no-repeat;
+    background: url("../images/recipemall-logo-commu.svg") no-repeat;
     background-size: 105%;
     background-position: -19px -19px;
     cursor: pointer;
